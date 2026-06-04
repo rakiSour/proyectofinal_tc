@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Analizador SQL a JSON | ReporterÍa Gerencial</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+<header class="hero">
+    <div class="hero__content">
+        <p class="eyebrow">Teoría de la Computación · Python + Flask</p>
+        <h1>Analizador léxico-sintáctico de SQL a JSON estructurado</h1>
+        <p>
+            Valida consultas <strong>SELECT</strong>, clasifica tokens, aplica una gramática formal
+            y transforma la consulta a una estructura JSON para reportería gerencial.
+        </p>
+    </div>
+</header>
+
+<main class="container">
+    <section class="card analyzer-card">
+        <div class="section-title">
+            <div>
+                <span class="badge">Entrada SQL</span>
+                <h2>Consulta a validar</h2>
+            </div>
+            <button id="clearBtn" class="btn btn--ghost" type="button">Limpiar</button>
+        </div>
+
+        <textarea id="sqlInput" spellcheck="false" placeholder="Escribe una consulta SELECT..."></textarea>
+
+        <div class="actions">
+            <button id="analyzeBtn" class="btn btn--primary" type="button">Analizar consulta</button>
+            <select id="exampleSelect" class="select">
+                <option value="">Cargar ejemplo...</option>
+                {% for example in examples %}
+                    <option value="{{ loop.index0 }}">{{ example.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </section>
+
+    <section id="statusCard" class="status status--empty">
+        <strong>Estado:</strong> Ingresa una consulta y presiona “Analizar consulta”.
+    </section>
+
+    <section class="grid">
+        <article class="card">
+            <div class="section-title">
+                <div>
+                    <span class="badge">Fase 1</span>
+                    <h2>Tokens léxicos</h2>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="tokensTable">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Tipo</th>
+                        <th>Valor</th>
+                        <th>Línea</th>
+                        <th>Columna</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr><td colspan="5" class="muted">Sin análisis ejecutado.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </article>
+
+        <article class="card">
+            <div class="section-title">
+                <div>
+                    <span class="badge">Fase 2 y 3</span>
+                    <h2>JSON estructurado</h2>
+                </div>
+                <button id="copyBtn" class="btn btn--ghost" type="button">Copiar JSON</button>
+            </div>
+            <pre id="jsonOutput" class="json-output">{}</pre>
+        </article>
+    </section>
+
+    <section class="card">
+        <div class="section-title">
+            <div>
+                <span class="badge">Catálogo formal</span>
+                <h2>Reglas consideradas</h2>
+            </div>
+        </div>
+        <div id="grammarList" class="grammar-list">
+            <p class="muted">Las reglas se mostrarán después del análisis.</p>
+        </div>
+    </section>
+</main>
+
+<script>
+    window.EXAMPLES = {{ examples|tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

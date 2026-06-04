@@ -1,0 +1,17 @@
+# Catálogo formal de tokens
+
+Este catálogo define la clasificación léxica usada por el proyecto.
+
+| Tipo | Descripción | Ejemplos |
+|---|---|---|
+| `KEYWORD` | Palabras reservadas SQL reconocidas por la gramática. | `SELECT`, `FROM`, `WHERE`, `GROUP`, `BY`, `ORDER`, `LIMIT`, `JOIN` |
+| `IDENTIFIER` | Nombres de tablas, columnas o alias. | `ventas`, `cliente_id`, `c.nombre` |
+| `NUMBER` | Valores numéricos enteros o decimales. | `10`, `1500.50` |
+| `STRING` | Literales de texto entre comillas simples. | `'ACTIVO'`, `'2026-01-01'` |
+| `OPERATOR` | Operadores comparativos o aritméticos. | `=`, `>=`, `<>`, `*` |
+| `PUNCTUATION` | Delimitadores de estructura. | `,`, `.`, `(`, `)`, `;` |
+| `EOF` | Marca interna de fin de entrada. | `<EOF>` |
+
+## Palabras reservadas soportadas
+
+`SELECT`, `FROM`, `WHERE`, `GROUP`, `BY`, `ORDER`, `ASC`, `DESC`, `LIMIT`, `AS`, `AND`, `OR`, `NOT`, `JOIN`, `INNER`, `LEFT`, `RIGHT`, `FULL`, `ON`, `HAVING`, `COUNT`, `SUM`, `AVG`, `MIN`, `MAX`, `DISTINCT`, `IN`, `LIKE`, `IS`, `NULL`.
