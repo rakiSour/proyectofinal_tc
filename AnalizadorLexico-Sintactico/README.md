@@ -2,7 +2,7 @@
 
 Proyecto universitario para el curso de **Teoría de la Computación**.
 
-**Tema:** Implementación de un analizador léxico-sintáctico para la validación y transformación de consultas SQL a formato JSON estructurado en la gestión de reportería gerencial.
+**Tema:** Implementación de un analizador léxico-sintáctico para la validación y transformación de consultas SQL a formato JSON estructurado en la gestión de el área de TI.
 
 ## Tecnologías
 
@@ -14,12 +14,28 @@ Proyecto universitario para el curso de **Teoría de la Computación**.
 
 ## Funcionalidades
 
-- Analiza consultas `SELECT` orientadas a reportería gerencial.
+- Analiza consultas `SELECT` orientadas a el área de TI.
 - Clasifica tokens léxicos: palabras reservadas, identificadores, números, cadenas, operadores y signos de puntuación.
 - Valida sintácticamente una gramática formal simplificada de SQL.
 - Transforma consultas válidas a JSON estructurado.
 - Muestra errores léxicos y sintácticos con línea y columna.
 - Incluye interfaz web con ejemplos, tabla de tokens y visualización del JSON.
+
+
+## Mejoras incorporadas por feedback docente
+
+- Cambio de enfoque del texto principal: la transformación JSON ahora se orienta al área de TI.
+- Carga de consultas SQL desde archivos `.txt` o `.csv`.
+- Generación de reporte PDF con la consulta evaluada, tokens léxicos y traducción a JSON estructurado.
+
+### Formato recomendado para archivos CSV
+
+El sistema acepta un CSV con una columna llamada `sql`, `consulta`, `query` o `sentencia`. Ejemplo:
+
+```csv
+nombre,sql
+Reporte de incidencias,SELECT prioridad, COUNT(*) AS total FROM incidencias GROUP BY prioridad;
+```
 
 ## Estructura del proyecto
 

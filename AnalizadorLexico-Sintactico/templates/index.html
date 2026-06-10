@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Analizador SQL a JSON | ReporterÍa Gerencial</title>
+    <title>Analizador SQL a JSON | Área de TI</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
@@ -13,7 +13,7 @@
         <h1>Analizador léxico-sintáctico de SQL a JSON estructurado</h1>
         <p>
             Valida consultas <strong>SELECT</strong>, clasifica tokens, aplica una gramática formal
-            y transforma la consulta a una estructura JSON para reportería gerencial.
+            y transforma la consulta a una estructura JSON para el área de TI.
         </p>
     </div>
 </header>
@@ -28,10 +28,22 @@
             <button id="clearBtn" class="btn btn--ghost" type="button">Limpiar</button>
         </div>
 
-        <textarea id="sqlInput" spellcheck="false" placeholder="Escribe una consulta SELECT..."></textarea>
+        <div class="upload-box">
+            <div>
+                <strong>Cargar consulta desde archivo</strong>
+                <p class="muted">Formatos admitidos: .txt o .csv. En CSV se recomienda usar una columna llamada sql, consulta o query.</p>
+            </div>
+            <div class="upload-actions">
+                <input id="fileInput" class="file-input" type="file" accept=".txt,.csv,text/plain,text/csv">
+                <button id="uploadBtn" class="btn btn--secondary" type="button">Cargar archivo</button>
+            </div>
+        </div>
+
+        <textarea id="sqlInput" spellcheck="false" placeholder="Escribe una consulta SELECT o carga un archivo TXT/CSV..."></textarea>
 
         <div class="actions">
             <button id="analyzeBtn" class="btn btn--primary" type="button">Analizar consulta</button>
+            <button id="pdfBtn" class="btn btn--report" type="button">Generar reporte PDF</button>
             <select id="exampleSelect" class="select">
                 <option value="">Cargar ejemplo...</option>
                 {% for example in examples %}
@@ -42,7 +54,7 @@
     </section>
 
     <section id="statusCard" class="status status--empty">
-        <strong>Estado:</strong> Ingresa una consulta y presiona “Analizar consulta”.
+        <strong>Estado:</strong> Ingresa una consulta, carga un archivo TXT/CSV o presiona “Analizar consulta”.
     </section>
 
     <section class="grid">
