@@ -136,7 +136,7 @@ def build_pdf_report(sql: str, result: dict) -> io.BytesIO:
     tokens = result.get("tokens") or []
     story.append(Paragraph("3. Tokens léxicos identificados", styles["Heading2"]))
     if tokens:
-        table_data = [["#", "Tipo", "Valor", "Línea", "Columna"]]
+        table_data = [["#", "Tipo", "Lexema", "Expresión regular"]]
         for index, token in enumerate(tokens, start=1):
             token_type = token.get("type", "")
             if token.get("subtype"):
@@ -144,18 +144,17 @@ def build_pdf_report(sql: str, result: dict) -> io.BytesIO:
             table_data.append([
                 str(index),
                 token_type,
-                str(token.get("value", ""))[:36],
-                str(token.get("line", "")),
-                str(token.get("column", "")),
+                str(token.get("value", ""))[:32],
+                str(token.get("regex", ""))[:70],
             ])
-        table = Table(table_data, colWidths=[28, 118, 205, 48, 58], repeatRows=1)
+        table = Table(table_data, colWidths=[28, 118, 120, 190], repeatRows=1)
         table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1d4ed8")),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
             ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
             ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#dce3f0")),
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ("FONTSIZE", (0, 0), (-1, -1), 8),
+            ("FONTSIZE", (0, 0), (-1, -1), 7),
         ]))
         story.append(table)
     else:

@@ -2,7 +2,7 @@
 
 Proyecto universitario para el curso de **Teoría de la Computación**.
 
-**Tema:** Implementación de un analizador léxico-sintáctico para la validación y transformación de consultas SQL a formato JSON estructurado en la gestión de el área de TI.
+**Tema:** Implementación de un analizador léxico-sintáctico para la validación y transformación de consultas SQL a formato JSON estructurado en la gestión del área de TI.
 
 ## Tecnologías
 
@@ -14,19 +14,23 @@ Proyecto universitario para el curso de **Teoría de la Computación**.
 
 ## Funcionalidades
 
-- Analiza consultas `SELECT` orientadas a el área de TI.
+- Analiza consultas `SELECT` orientadas al área de TI.
 - Clasifica tokens léxicos: palabras reservadas, identificadores, números, cadenas, operadores y signos de puntuación.
 - Valida sintácticamente una gramática formal simplificada de SQL.
 - Transforma consultas válidas a JSON estructurado.
-- Muestra errores léxicos y sintácticos con línea y columna.
-- Incluye interfaz web con ejemplos, tabla de tokens y visualización del JSON.
+- Muestra errores léxicos y sintácticos.
+- Muestra una tabla de tokens con tipo, lexema y expresión regular asociada.
+- Incluye interfaz web con ejemplos, tabla de tokens, visualización del JSON, AFD léxico y árbol sintáctico.
 
 
 ## Mejoras incorporadas por feedback docente
 
 - Cambio de enfoque del texto principal: la transformación JSON ahora se orienta al área de TI.
 - Carga de consultas SQL desde archivos `.txt` o `.csv`.
-- Generación de reporte PDF con la consulta evaluada, tokens léxicos y traducción a JSON estructurado.
+- Generación de reporte PDF con la consulta evaluada, tokens léxicos, expresiones regulares y traducción a JSON estructurado.
+- Botón para mostrar un Autómata Finito Determinista del analizador léxico.
+- Botón para mostrar gráficamente el árbol sintáctico de una consulta SQL válida.
+- Actualización de la tabla de tokens: se reemplazaron línea y columna por la expresión regular de cada token.
 
 ### Formato recomendado para archivos CSV
 
@@ -54,12 +58,14 @@ sql_json_analyzer_flask/
 ├── docs/
 │   ├── CATALOGO_TOKENS.md
 │   ├── GRAMATICA_BNF.md
-│   └── CASOS_PRUEBA.md
+│   ├── CASOS_PRUEBA.md
+│   └── DIAGRAMAS_AUTOMATA_ARBOL.md
 ├── tests/
 │   └── test_analyzer.py
 ├── requirements.txt
 ├── Procfile
 ├── render.yaml
+├── vercel.json
 └── runtime.txt
 ```
 
@@ -139,6 +145,18 @@ git commit -m "Implementación inicial del analizador SQL a JSON"
 git branch -M main
 git remote add origin https://github.com/TU_USUARIO/TU_REPOSITORIO.git
 git push -u origin main
+```
+
+## Despliegue en Vercel
+
+El proyecto incluye `vercel.json` para enrutar todas las solicitudes hacia `app.py`. Configuración recomendada si el repositorio contiene la carpeta del proyecto como subdirectorio:
+
+```text
+Framework Preset: Flask
+Root Directory: AnalizadorLexico-Sintactico
+Install Command: pip install -r requirements.txt
+Build Command: vacío
+Output Directory: vacío
 ```
 
 ## Despliegue en Render

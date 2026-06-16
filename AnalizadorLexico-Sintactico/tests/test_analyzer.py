@@ -42,3 +42,13 @@ def test_invalid_lexical_character():
     result = analyze_sql("SELECT nombre FROM clientes @;")
     assert result["valid"] is False
     assert result["stage"] == "lexical"
+
+
+def test_tokens_include_regular_expression_and_parse_tree():
+    result = analyze_sql("SELECT nombre, prioridad FROM incidencias;")
+    assert result["valid"] is True
+    assert result["tokens"][0]["regex"]
+    punctuation = next(token for token in result["tokens"] if token["type"] == "PUNCTUATION" and token["value"] == ",")
+    assert punctuation["regex"] == r"[,\.\(\);]"
+    assert result["parse_tree"]["label"] == "Consulta SQL válida"
+    assert result["automaton"]["type"] == "AFD"

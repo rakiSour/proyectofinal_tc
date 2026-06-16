@@ -43,6 +43,8 @@
 
         <div class="actions">
             <button id="analyzeBtn" class="btn btn--primary" type="button">Analizar consulta</button>
+            <button id="automatonBtn" class="btn btn--diagram" type="button">Mostrar AFD léxico</button>
+            <button id="treeBtn" class="btn btn--diagram" type="button">Mostrar árbol sintáctico</button>
             <button id="pdfBtn" class="btn btn--report" type="button">Generar reporte PDF</button>
             <select id="exampleSelect" class="select">
                 <option value="">Cargar ejemplo...</option>
@@ -55,6 +57,31 @@
 
     <section id="statusCard" class="status status--empty">
         <strong>Estado:</strong> Ingresa una consulta, carga un archivo TXT/CSV o presiona “Analizar consulta”.
+    </section>
+
+    <section id="automatonCard" class="card diagram-card is-hidden">
+        <div class="section-title">
+            <div>
+                <span class="badge">Autómata finito</span>
+                <h2>AFD del analizador léxico</h2>
+                <p class="muted">
+                    Se eligió un <strong>AFD</strong> porque el reconocimiento de tokens se basa en expresiones regulares:
+                    para cada carácter leído existe una transición determinada según su clase léxica.
+                </p>
+            </div>
+        </div>
+        <div id="automatonDiagram" class="diagram-canvas"></div>
+    </section>
+
+    <section id="treeCard" class="card diagram-card is-hidden">
+        <div class="section-title">
+            <div>
+                <span class="badge">Árbol sintáctico</span>
+                <h2>Diagrama de árbol de la consulta</h2>
+                <p class="muted">El árbol se genera a partir de la consulta SQL aceptada por la gramática formal.</p>
+            </div>
+        </div>
+        <div id="treeDiagram" class="diagram-canvas"></div>
     </section>
 
     <section class="grid">
@@ -71,13 +98,12 @@
                     <tr>
                         <th>#</th>
                         <th>Tipo</th>
-                        <th>Valor</th>
-                        <th>Línea</th>
-                        <th>Columna</th>
+                        <th>Lexema</th>
+                        <th>Expresión regular</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr><td colspan="5" class="muted">Sin análisis ejecutado.</td></tr>
+                    <tr><td colspan="4" class="muted">Sin análisis ejecutado.</td></tr>
                     </tbody>
                 </table>
             </div>

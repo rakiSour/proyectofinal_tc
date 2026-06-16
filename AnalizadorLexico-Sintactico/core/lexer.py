@@ -10,14 +10,24 @@ KEYWORDS = {
 
 AGGREGATE_FUNCTIONS = {"COUNT", "SUM", "AVG", "MIN", "MAX"}
 
+TOKEN_REGEX = {
+    "KEYWORD": r"(?i)\b(SELECT|FROM|WHERE|GROUP|BY|ORDER|ASC|DESC|LIMIT|AS|AND|OR|NOT|JOIN|INNER|LEFT|RIGHT|FULL|ON|HAVING|COUNT|SUM|AVG|MIN|MAX|DISTINCT|IN|LIKE|IS|NULL)\b",
+    "IDENTIFIER": r"[A-Za-z_][A-Za-z0-9_$]*",
+    "NUMBER": r"\d+(\.\d+)?",
+    "STRING": r"'([^']|'')*'",
+    "OPERATOR": r"<=|>=|!=|<>|=|<|>|\+|-|\*|/",
+    "PUNCTUATION": r"[,\.\(\);]",
+    "EOF": r"\Z",
+}
+
 TOKEN_CATALOG = [
-    {"type": "KEYWORD", "description": "Palabras reservadas SQL", "examples": ["SELECT", "FROM", "WHERE", "GROUP BY"]},
-    {"type": "IDENTIFIER", "description": "Nombres de tablas, columnas o alias", "examples": ["ventas", "cliente_id", "v.total"]},
-    {"type": "NUMBER", "description": "Valores numéricos enteros o decimales", "examples": ["10", "25.50"]},
-    {"type": "STRING", "description": "Cadenas encerradas entre comillas simples", "examples": ["'ACTIVO'", "'2026-01-01'"]},
-    {"type": "OPERATOR", "description": "Operadores aritméticos o comparativos", "examples": ["=", ">=", "<>", "*"]},
-    {"type": "PUNCTUATION", "description": "Símbolos delimitadores", "examples": [",", ".", "(", ")", ";"]},
-    {"type": "EOF", "description": "Fin de entrada", "examples": ["<EOF>"]},
+    {"type": "KEYWORD", "description": "Palabras reservadas SQL", "regex": TOKEN_REGEX["KEYWORD"], "examples": ["SELECT", "FROM", "WHERE", "GROUP BY"]},
+    {"type": "IDENTIFIER", "description": "Nombres de tablas, columnas o alias", "regex": TOKEN_REGEX["IDENTIFIER"], "examples": ["ventas", "cliente_id", "v.total"]},
+    {"type": "NUMBER", "description": "Valores numéricos enteros o decimales", "regex": TOKEN_REGEX["NUMBER"], "examples": ["10", "25.50"]},
+    {"type": "STRING", "description": "Cadenas encerradas entre comillas simples", "regex": TOKEN_REGEX["STRING"], "examples": ["'ACTIVO'", "'2026-01-01'"]},
+    {"type": "OPERATOR", "description": "Operadores aritméticos o comparativos", "regex": TOKEN_REGEX["OPERATOR"], "examples": ["=", ">=", "<>", "*"]},
+    {"type": "PUNCTUATION", "description": "Símbolos delimitadores", "regex": TOKEN_REGEX["PUNCTUATION"], "examples": [",", ".", "(", ")", ";"]},
+    {"type": "EOF", "description": "Fin de entrada", "regex": TOKEN_REGEX["EOF"], "examples": ["<EOF>"]},
 ]
 
 
@@ -34,6 +44,7 @@ class Token:
         data = {
             "type": self.type,
             "value": self.value,
+            "regex": TOKEN_REGEX.get(self.type, ""),
             "position": self.position,
             "line": self.line,
             "column": self.column,
