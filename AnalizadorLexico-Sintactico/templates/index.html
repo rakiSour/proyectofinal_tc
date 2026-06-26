@@ -12,7 +12,7 @@
         <p class="eyebrow">Teoría de la Computación · Python + Flask</p>
         <h1>Analizador léxico-sintáctico de SQL a JSON estructurado</h1>
         <p>
-            Valida consultas <strong>SELECT</strong>, clasifica tokens, aplica una gramática formal
+            Valida consultas <strong>SELECT</strong>, clasifica tokens, aplica una gramática libre de contexto
             y transforma la consulta a una estructura JSON para el área de TI.
         </p>
     </div>
@@ -43,7 +43,10 @@
 
         <div class="actions">
             <button id="analyzeBtn" class="btn btn--primary" type="button">Analizar consulta</button>
-            <button id="automatonBtn" class="btn btn--diagram" type="button">Mostrar AFD léxico</button>
+            <button id="globalAfndBtn" class="btn btn--diagram" type="button">Mostrar AFND general</button>
+            <button id="automatonBtn" class="btn btn--diagram" type="button">Mostrar AFD general</button>
+            <button id="globalTransitionBtn" class="btn btn--diagram" type="button">Mostrar tabla de transición</button>
+            <button id="grammarBtn" class="btn btn--diagram" type="button">Mostrar gramática libre de contexto</button>
             <button id="treeBtn" class="btn btn--diagram" type="button">Mostrar árbol sintáctico</button>
             <button id="pdfBtn" class="btn btn--report" type="button">Generar reporte PDF</button>
             <select id="exampleSelect" class="select">
@@ -59,14 +62,24 @@
         <strong>Estado:</strong> Ingresa una consulta, carga un archivo TXT/CSV o presiona “Analizar consulta”.
     </section>
 
+    <section id="formalDetailCard" class="card diagram-card is-hidden">
+        <div class="section-title">
+            <div>
+                <span id="formalDetailBadge" class="badge">Modelo formal</span>
+                <h2 id="formalDetailTitle">Detalle formal</h2>
+                <p id="formalDetailDescription" class="muted">Selecciona una acción desde la tabla de tokens.</p>
+            </div>
+        </div>
+        <div id="formalDetailContent" class="diagram-canvas"></div>
+    </section>
+
     <section id="automatonCard" class="card diagram-card is-hidden">
         <div class="section-title">
             <div>
-                <span class="badge">Autómata finito</span>
-                <h2>AFD del analizador léxico</h2>
-                <p class="muted">
-                    Se eligió un <strong>AFD</strong> porque el reconocimiento de tokens se basa en expresiones regulares:
-                    para cada carácter leído existe una transición determinada según su clase léxica.
+                <span id="automatonBadge" class="badge">Autómata finito</span>
+                <h2 id="automatonTitle">AFD general del analizador léxico</h2>
+                <p id="automatonDescription" class="muted">
+                    El AFD general muestra cómo el analizador clasifica los lexemas de una consulta SQL.
                 </p>
             </div>
         </div>
@@ -78,18 +91,36 @@
             <div>
                 <span class="badge">Árbol sintáctico</span>
                 <h2>Diagrama de árbol de la consulta</h2>
-                <p class="muted">El árbol se genera a partir de la consulta SQL aceptada por la gramática formal.</p>
+                <p class="muted">El árbol se genera a partir de la consulta SQL aceptada por la gramática libre de contexto.</p>
             </div>
         </div>
         <div id="treeDiagram" class="diagram-canvas"></div>
     </section>
 
+    <section id="grammarCard" class="card diagram-card">
+        <div class="section-title">
+            <div>
+                <span class="badge">Gramática Libre de Contexto</span>
+                <h2>GLC utilizada por el analizador sintáctico</h2>
+                <p class="muted">
+                    Este apartado muestra las producciones formales que acepta el parser descendente recursivo para consultas SELECT.
+                </p>
+            </div>
+        </div>
+        <div id="grammarList" class="grammar-list">
+            <p class="muted">Las reglas se mostrarán después del análisis.</p>
+        </div>
+    </section>
+
     <section class="grid">
-        <article class="card">
+        <article class="card card--wide">
             <div class="section-title">
                 <div>
                     <span class="badge">Fase 1</span>
-                    <h2>Tokens léxicos</h2>
+                    <h2>Tokens léxicos, regex y acciones formales</h2>
+                    <p class="muted">
+                        Cada lexema permite consultar su AFND, AFD, tabla de transición, gramática libre de contexto y árbol sintáctico.
+                    </p>
                 </div>
             </div>
             <div class="table-wrapper">
@@ -100,10 +131,11 @@
                         <th>Tipo</th>
                         <th>Lexema</th>
                         <th>Expresión regular</th>
+                        <th>Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr><td colspan="4" class="muted">Sin análisis ejecutado.</td></tr>
+                    <tr><td colspan="5" class="muted">Sin análisis ejecutado.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -112,25 +144,13 @@
         <article class="card">
             <div class="section-title">
                 <div>
-                    <span class="badge">Fase 2 y 3</span>
+                    <span class="badge">Fase 3</span>
                     <h2>JSON estructurado</h2>
                 </div>
                 <button id="copyBtn" class="btn btn--ghost" type="button">Copiar JSON</button>
             </div>
             <pre id="jsonOutput" class="json-output">{}</pre>
         </article>
-    </section>
-
-    <section class="card">
-        <div class="section-title">
-            <div>
-                <span class="badge">Catálogo formal</span>
-                <h2>Reglas consideradas</h2>
-            </div>
-        </div>
-        <div id="grammarList" class="grammar-list">
-            <p class="muted">Las reglas se mostrarán después del análisis.</p>
-        </div>
     </section>
 </main>
 

@@ -52,3 +52,14 @@ def test_tokens_include_regular_expression_and_parse_tree():
     assert punctuation["regex"] == r"[,\.\(\);]"
     assert result["parse_tree"]["label"] == "Consulta SQL válida"
     assert result["automaton"]["type"] == "AFD"
+
+
+def test_token_formal_models_are_available():
+    result = analyze_sql("SELECT nombre, prioridad FROM incidencias;")
+    assert result["valid"] is True
+    assert "token_automata" in result
+    assert "IDENTIFIER" in result["token_automata"]
+    identifier_model = result["token_automata"]["IDENTIFIER"]
+    assert identifier_model["afnd"]["type"] == "AFND"
+    assert identifier_model["afd"]["type"] == "AFD"
+    assert identifier_model["transition_table"]

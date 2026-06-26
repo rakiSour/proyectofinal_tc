@@ -20,7 +20,7 @@ Proyecto universitario para el curso de **Teoría de la Computación**.
 - Transforma consultas válidas a JSON estructurado.
 - Muestra errores léxicos y sintácticos.
 - Muestra una tabla de tokens con tipo, lexema y expresión regular asociada.
-- Incluye interfaz web con ejemplos, tabla de tokens, visualización del JSON, AFD léxico y árbol sintáctico.
+- Incluye interfaz web con ejemplos, tabla de tokens, visualización del JSON, AFND, AFD, tablas de transición, Gramática Libre de Contexto y árbol sintáctico.
 
 
 ## Mejoras incorporadas por feedback docente
@@ -28,9 +28,11 @@ Proyecto universitario para el curso de **Teoría de la Computación**.
 - Cambio de enfoque del texto principal: la transformación JSON ahora se orienta al área de TI.
 - Carga de consultas SQL desde archivos `.txt` o `.csv`.
 - Generación de reporte PDF con la consulta evaluada, tokens léxicos, expresiones regulares y traducción a JSON estructurado.
-- Botón para mostrar un Autómata Finito Determinista del analizador léxico.
-- Botón para mostrar gráficamente el árbol sintáctico de una consulta SQL válida.
-- Actualización de la tabla de tokens: se reemplazaron línea y columna por la expresión regular de cada token.
+- Apartado explícito para mostrar la Gramática Libre de Contexto del parser.
+- Botones generales para mostrar AFND, AFD, tabla de transición, GLC y árbol sintáctico.
+- Botones por cada lexema/token para mostrar su AFND, AFD, tabla de transición, GLC y árbol sintáctico.
+- Actualización de la tabla de tokens: se reemplazaron línea y columna por la expresión regular de cada token y se agregaron acciones interactivas.
+- Corrección del formato del reporte PDF para evitar overflow en tablas, expresiones regulares, JSON y producciones gramaticales.
 
 ### Formato recomendado para archivos CSV
 

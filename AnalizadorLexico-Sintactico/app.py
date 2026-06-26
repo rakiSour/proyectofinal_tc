@@ -2,12 +2,13 @@ import csv
 import io
 import json
 from datetime import datetime
+from html import escape as html_escape
 
 from flask import Flask, jsonify, make_response, render_template, request, send_file
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.platypus import Paragraph, Preformatted, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.platypus import LongTable, Paragraph, SimpleDocTemplate, Spacer, TableStyle
 
 from core.analyzer import analyze_sql
 
@@ -101,18 +102,58 @@ def extract_sql_from_uploaded_file(uploaded_file) -> str:
 
 
 def build_pdf_report(sql: str, result: dict) -> io.BytesIO:
+    """Genera un reporte PDF con ajuste de texto para evitar overflow.
+
+    Se usa orientación horizontal y celdas Paragraph para que las expresiones
+    regulares, tokens largos y JSON no se salgan de los límites de la tabla.
+    """
     buffer = io.BytesIO()
     document = SimpleDocTemplate(
         buffer,
-        pagesize=A4,
-        rightMargin=36,
-        leftMargin=36,
-        topMargin=40,
-        bottomMargin=36,
+        pagesize=landscape(A4),
+        rightMargin=32,
+        leftMargin=32,
+        topMargin=34,
+        bottomMargin=30,
         title="Reporte de análisis SQL a JSON",
     )
     styles = getSampleStyleSheet()
+    code_style = ParagraphStyle(
+        "CodeWrap",
+        parent=styles["Code"],
+        fontName="Courier",
+        fontSize=7,
+        leading=9,
+        wordWrap="CJK",
+        splitLongWords=True,
+        backColor=colors.HexColor("#f8fafc"),
+        borderColor=colors.HexColor("#dce3f0"),
+        borderWidth=0.25,
+        borderPadding=6,
+        spaceAfter=6,
+    )
+    small_style = ParagraphStyle(
+        "SmallTableText",
+        parent=styles["Normal"],
+        fontSize=7,
+        leading=9,
+        wordWrap="CJK",
+        splitLongWords=True,
+    )
+    small_code_style = ParagraphStyle(
+        "SmallCodeTableText",
+        parent=small_style,
+        fontName="Courier",
+        wordWrap="CJK",
+        splitLongWords=True,
+    )
     story = []
+
+    def safe_text(value: object) -> str:
+        return html_escape(str(value if value is not None else "")).replace("\n", "<br/>")
+
+    def paragraph(value: object, style=small_style) -> Paragraph:
+        return Paragraph(safe_text(value), style)
 
     status_text = "Consulta válida" if result.get("valid") else "Consulta con errores"
     generated_at = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -121,60 +162,94 @@ def build_pdf_report(sql: str, result: dict) -> io.BytesIO:
     story.append(Paragraph("Área de TI", styles["Heading2"]))
     story.append(Paragraph(f"Fecha de generación: {generated_at}", styles["Normal"]))
     story.append(Paragraph(f"Estado del análisis: <b>{status_text}</b>", styles["Normal"]))
-    story.append(Spacer(1, 12))
+    story.append(Spacer(1, 10))
 
     story.append(Paragraph("1. Consulta SQL evaluada", styles["Heading2"]))
-    story.append(Preformatted(sql or "Sin consulta ingresada.", styles["Code"]))
-    story.append(Spacer(1, 10))
+    story.append(Paragraph(safe_text(sql or "Sin consulta ingresada."), code_style))
+    story.append(Spacer(1, 8))
 
     story.append(Paragraph("2. Traducción a JSON estructurado", styles["Heading2"]))
     json_payload = result.get("structured_json") if result.get("valid") else result
     json_text = json.dumps(json_payload, ensure_ascii=False, indent=2)
-    story.append(Preformatted(json_text, styles["Code"]))
-    story.append(Spacer(1, 10))
+    story.append(Paragraph(safe_text(json_text), code_style))
+    story.append(Spacer(1, 8))
 
     tokens = result.get("tokens") or []
     story.append(Paragraph("3. Tokens léxicos identificados", styles["Heading2"]))
     if tokens:
-        table_data = [["#", "Tipo", "Lexema", "Expresión regular"]]
+        table_data = [[
+            paragraph("#"),
+            paragraph("Tipo"),
+            paragraph("Lexema", small_code_style),
+            paragraph("Expresión regular", small_code_style),
+        ]]
         for index, token in enumerate(tokens, start=1):
             token_type = token.get("type", "")
             if token.get("subtype"):
                 token_type = f"{token_type} ({token.get('subtype')})"
             table_data.append([
-                str(index),
-                token_type,
-                str(token.get("value", ""))[:32],
-                str(token.get("regex", ""))[:70],
+                paragraph(index),
+                paragraph(token_type),
+                paragraph(token.get("value", ""), small_code_style),
+                paragraph(token.get("regex", ""), small_code_style),
             ])
-        table = Table(table_data, colWidths=[28, 118, 120, 190], repeatRows=1)
+        table = LongTable(table_data, colWidths=[24, 130, 180, 400], repeatRows=1, splitByRow=1)
         table.setStyle(TableStyle([
             ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1d4ed8")),
             ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
             ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
             ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#dce3f0")),
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
-            ("FONTSIZE", (0, 0), (-1, -1), 7),
+            ("LEFTPADDING", (0, 0), (-1, -1), 4),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
         ]))
         story.append(table)
     else:
         story.append(Paragraph("No se identificaron tokens para mostrar.", styles["Normal"]))
-    story.append(Spacer(1, 10))
+    story.append(Spacer(1, 8))
+
+    grammar = result.get("grammar") or []
+    story.append(Paragraph("4. Gramática Libre de Contexto utilizada", styles["Heading2"]))
+    if grammar:
+        grammar_data = [[paragraph("No."), paragraph("No terminal"), paragraph("Producción")]]
+        for index, rule in enumerate(grammar, start=1):
+            grammar_data.append([
+                paragraph(index),
+                paragraph(rule.get("name", "")),
+                paragraph(rule.get("production", ""), small_code_style),
+            ])
+        grammar_table = LongTable(grammar_data, colWidths=[28, 150, 556], repeatRows=1, splitByRow=1)
+        grammar_table.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0f766e")),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+            ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#dce3f0")),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+            ("LEFTPADDING", (0, 0), (-1, -1), 4),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+            ("TOPPADDING", (0, 0), (-1, -1), 4),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ]))
+        story.append(grammar_table)
+    else:
+        story.append(Paragraph("No hay reglas gramaticales para mostrar.", styles["Normal"]))
 
     errors = result.get("errors") or []
     if errors:
-        story.append(Paragraph("4. Observaciones o errores detectados", styles["Heading2"]))
+        story.append(Spacer(1, 8))
+        story.append(Paragraph("5. Observaciones o errores detectados", styles["Heading2"]))
         for error in errors:
             message = error.get("message", "Error no especificado.")
             line = error.get("line")
             column = error.get("column")
             position = f" Línea {line}, columna {column}." if line and column else ""
-            story.append(Paragraph(f"• {message}{position}", styles["Normal"]))
+            story.append(Paragraph(f"• {safe_text(message + position)}", styles["Normal"]))
 
     document.build(story)
     buffer.seek(0)
     return buffer
-
 
 @app.route("/")
 def index():

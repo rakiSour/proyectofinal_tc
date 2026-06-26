@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 from .lexer import SQLLexer, LexicalError, TOKEN_CATALOG
 from .parser import SQLParser, SyntaxErrorSQL, GRAMMAR_RULES
-from .visual_models import AUTOMATON_MODEL, build_parse_tree
+from .visual_models import AUTOMATON_MODEL, TOKEN_AUTOMATA_MODELS, build_parse_tree
 
 
 def base_payload() -> Dict[str, Any]:
@@ -10,6 +10,7 @@ def base_payload() -> Dict[str, Any]:
         "grammar": [rule.__dict__ for rule in GRAMMAR_RULES],
         "token_catalog": TOKEN_CATALOG,
         "automaton": AUTOMATON_MODEL,
+        "token_automata": TOKEN_AUTOMATA_MODELS,
     }
 
 
